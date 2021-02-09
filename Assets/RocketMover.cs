@@ -10,7 +10,10 @@ public class RocketMover : MonoBehaviour
     Quaternion originalRotation;
 
     [SerializeField]
-    public int RCSThrust = 10;
+    int RCSThrust = 10;
+
+    [SerializeField]
+    int MainThrust = 100;
 
     // Start is called before the first frame update
     void Start()
@@ -25,35 +28,36 @@ public class RocketMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
+        Thrust();
+        Rotate();
+
+        CheckReset();
     }
 
-    void ProcessInput()
+    private void Thrust()
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            rigidBody.AddRelativeForce(Vector3.up);
+            var thrust = MainThrust * Time.deltaTime;
+            rigidBody.AddRelativeForce(Vector3.up * thrust);
 
             if (!audioSource.isPlaying)
             {
                 audioSource.Play();
             }
-        } else
+        }
+        else
         {
             if (audioSource.isPlaying)
             {
                 audioSource.Stop();
             }
         }
+    }
 
-        if (Input.GetKey(KeyCode.R))
-        {
-            transform.position = originalPosition;
-            transform.rotation = originalRotation;
-
-            rigidBody.velocity = Vector3.zero;
-            rigidBody.angularVelocity = Vector3.zero;
-        }
+    void Rotate()
+    {
+        rigidBody.freezeRotation = true;
 
         var thrust = RCSThrust * Time.deltaTime;
         if (Input.GetKey(KeyCode.A))
@@ -63,6 +67,20 @@ public class RocketMover : MonoBehaviour
         else if (Input.GetKey(KeyCode.D))
         {
             transform.Rotate(thrust * -Vector3.forward);
+        }
+
+        rigidBody.freezeRotation = false;
+    }
+
+    private void CheckReset()
+    {
+        if (Input.GetKey(KeyCode.R))
+        {
+            transform.position = originalPosition;
+            transform.rotation = originalRotation;
+
+            rigidBody.velocity = Vector3.zero;
+            rigidBody.angularVelocity = Vector3.zero;
         }
     }
 }

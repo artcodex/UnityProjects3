@@ -5,6 +5,7 @@ using UnityEngine;
 public class RocketMover : MonoBehaviour
 {
     Rigidbody rigidBody;
+    AudioSource audioSource;
     Vector3 originalPosition;
     Quaternion originalRotation;
 
@@ -18,6 +19,7 @@ public class RocketMover : MonoBehaviour
         originalRotation = transform.rotation;
 
         rigidBody = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -31,6 +33,17 @@ public class RocketMover : MonoBehaviour
         if (Input.GetKey(KeyCode.Space))
         {
             rigidBody.AddRelativeForce(Vector3.up);
+
+            if (!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
+        } else
+        {
+            if (audioSource.isPlaying)
+            {
+                audioSource.Stop();
+            }
         }
 
         if (Input.GetKey(KeyCode.R))

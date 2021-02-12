@@ -16,6 +16,16 @@ public class RocketMover : MonoBehaviour
     [SerializeField]
     int MainThrust = 100;
 
+    [SerializeField]
+    AudioClip thrustClip;
+
+    [SerializeField]
+    AudioClip deathClip;
+
+    [SerializeField]
+    AudioClip loadClip;
+
+
     enum State
     {
         Transcending,
@@ -45,15 +55,30 @@ public class RocketMover : MonoBehaviour
 			case "Friendly":
 				break;
             case "Finnish":
-                state = State.Transcending;
-                Invoke("LoadNextScene", 1f);
+                InvokeSuccessSequence();
                 break;
             default:
-                state = State.Dying;
-                Invoke("ResetGame", 1f);
+                InvokeDeathSequence();
                 break;
         }
 	}
+
+    private void InvokeSuccessSequence()
+    {
+        state = State.Transcending;
+        audioSource.Stop();
+        audioSource.PlayOneShot(loadClip);
+
+        Invoke("LoadNextScene", 1f);
+    }
+
+    private void InvokeDeathSequence()
+    {
+        state = State.Dying;
+        audioSource.Stop();
+        audioSource.PlayOneShot(deathClip);
+        Invoke("ResetGame", 1f);
+    }
 
     private void ResetGame()
     {
@@ -70,27 +95,23 @@ public class RocketMover : MonoBehaviour
     {
         if (state == State.Alive)
         {
-            Thrust();
-            Rotate();
+            RespondToThrustInput();
+            RespondToRotateInput();
 
             CheckReset();
-        } else
-        {
-            audioSource.Stop();
-        }
+        } 
     }
 
-    private void Thrust()
+    private void RespondToThrustInput()
     {
+        if (state != State.Alive)
+        {
+            return;
+        }
+
         if (Input.GetKey(KeyCode.Space))
         {
-            var thrust = MainThrust * Time.deltaTime;
-            rigidBody.AddRelativeForce(Vector3.up * thrust);
-
-            if (!audioSource.isPlaying)
-            {
-                audioSource.Play();
-            }
+            ApplyThrust();
         }
         else
         {
@@ -101,7 +122,18 @@ public class RocketMover : MonoBehaviour
         }
     }
 
-    void Rotate()
+    private void ApplyThrust()
+    {
+        var thrust = MainThrust * Time.deltaTime;
+        rigidBody.AddRelativeForce(Vector3.up * thrust);
+
+        if (!audioSource.isPlaying && thrustClip != null)
+        {
+            audioSource.PlayOneShot(thrustClip);
+        }
+    }
+
+    void RespondToRotateInput()
     {
         rigidBody.freezeRotation = true;
 

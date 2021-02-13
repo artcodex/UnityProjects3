@@ -118,6 +118,7 @@ public class RocketMover : MonoBehaviour
     {
         if (state != State.Alive)
         {
+			StopThrust();
             return;
         }
 
@@ -127,13 +128,17 @@ public class RocketMover : MonoBehaviour
         }
         else
         {
+			StopThrust();
+        }
+    }
+
+	private void StopThrust() {
             if (audioSource.isPlaying)
             {
                 audioSource.Stop();
             }
 			thrustSystem.Stop();
-        }
-    }
+	}
 
     private void ApplyThrust()
     {

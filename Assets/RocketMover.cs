@@ -137,7 +137,11 @@ public class RocketMover : MonoBehaviour
             {
                 audioSource.Stop();
             }
-			thrustSystem.Stop();
+
+        if (thrustSystem.isPlaying)
+        {
+            thrustSystem.Stop();
+        }
 	}
 
     private void ApplyThrust()
@@ -150,7 +154,10 @@ public class RocketMover : MonoBehaviour
             audioSource.PlayOneShot(thrustClip);
         }
 
-		thrustSystem.Play();
+        if (thrustSystem.isStopped)
+        {
+            thrustSystem.Play();
+        }
     }
 
     void RespondToRotateInput()

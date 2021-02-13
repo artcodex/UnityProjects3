@@ -25,6 +25,15 @@ public class RocketMover : MonoBehaviour
     [SerializeField]
     AudioClip loadClip;
 
+	[SerializeField]
+	ParticleSystem thrustSystem;
+
+	[SerializeField]
+	ParticleSystem deathSystem;
+
+	[SerializeField]
+	ParticleSystem successSystem;
+
 
     enum State
     {
@@ -68,6 +77,7 @@ public class RocketMover : MonoBehaviour
         state = State.Transcending;
         audioSource.Stop();
         audioSource.PlayOneShot(loadClip);
+		successSystem.Play();
 
         Invoke("LoadNextScene", 1f);
     }
@@ -77,6 +87,8 @@ public class RocketMover : MonoBehaviour
         state = State.Dying;
         audioSource.Stop();
         audioSource.PlayOneShot(deathClip);
+		deathSystem.Play();
+		
         Invoke("ResetGame", 1f);
     }
 
@@ -119,6 +131,7 @@ public class RocketMover : MonoBehaviour
             {
                 audioSource.Stop();
             }
+			thrustSystem.Stop();
         }
     }
 
@@ -131,6 +144,8 @@ public class RocketMover : MonoBehaviour
         {
             audioSource.PlayOneShot(thrustClip);
         }
+
+		thrustSystem.Play();
     }
 
     void RespondToRotateInput()

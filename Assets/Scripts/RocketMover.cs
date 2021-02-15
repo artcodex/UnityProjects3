@@ -34,6 +34,9 @@ public class RocketMover : MonoBehaviour
 	[SerializeField]
 	ParticleSystem successSystem;
 
+    [SerializeField]
+    float LoadLevelDelay = 2f;
+
 
     enum State
     {
@@ -79,7 +82,7 @@ public class RocketMover : MonoBehaviour
         audioSource.PlayOneShot(loadClip);
 		successSystem.Play();
 
-        Invoke("LoadNextScene", 1f);
+        Invoke("LoadNextScene", LoadLevelDelay);
     }
 
     private void InvokeDeathSequence()
@@ -89,7 +92,7 @@ public class RocketMover : MonoBehaviour
         audioSource.PlayOneShot(deathClip);
 		deathSystem.Play();
 		
-        Invoke("ResetGame", 1f);
+        Invoke("ResetGame", LoadLevelDelay);
     }
 
     private void ResetGame()

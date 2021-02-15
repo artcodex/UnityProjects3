@@ -21,6 +21,11 @@ public class Oscillator : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (TimePeriod <= Mathf.Epsilon)
+        {
+            return;
+        }
+     
         var cycleOffset = Time.time / TimePeriod;
         var pi2 = Mathf.PI * 2;
         float oscillationFactor = Mathf.Sin(cycleOffset * pi2);

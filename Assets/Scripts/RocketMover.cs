@@ -28,7 +28,13 @@ public class RocketMover : MonoBehaviour
 	[SerializeField]
 	ParticleSystem thrustSystem;
 
-	[SerializeField]
+    [SerializeField]
+    ParticleSystem leftThrustSystem;
+
+    [SerializeField]
+    ParticleSystem rightThrustSystem;
+
+    [SerializeField]
 	ParticleSystem deathSystem;
 
 	[SerializeField]
@@ -136,10 +142,10 @@ public class RocketMover : MonoBehaviour
     }
 
 	private void StopThrust() {
-            if (audioSource.isPlaying)
-            {
-                audioSource.Stop();
-            }
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
 
         if (thrustSystem.isPlaying)
         {

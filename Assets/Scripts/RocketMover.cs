@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class RocketMover : MonoBehaviour
@@ -15,6 +16,9 @@ public class RocketMover : MonoBehaviour
 
     [SerializeField]
     int MainThrust = 100;
+
+    [SerializeField] 
+    Text collisionText;
 
     [SerializeField]
     AudioClip thrustClip;
@@ -42,7 +46,8 @@ public class RocketMover : MonoBehaviour
 
     [SerializeField]
     float LoadLevelDelay = 2f;
-
+    
+    private bool collisionsEnabled = true;
 
     enum State
     {
@@ -76,7 +81,11 @@ public class RocketMover : MonoBehaviour
                 InvokeSuccessSequence();
                 break;
             default:
-                InvokeDeathSequence();
+                if (collisionsEnabled)
+                {
+                    InvokeDeathSequence();
+                }
+
                 break;
         }
 	}
@@ -103,12 +112,19 @@ public class RocketMover : MonoBehaviour
 
     private void ResetGame()
     {
-        SceneManager.LoadScene(0);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
     }
 
     private void LoadNextScene()
     {
-        SceneManager.LoadScene(1);
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        currentSceneIndex += 1;
+        if (currentSceneIndex == SceneManager.sceneCountInBuildSettings)
+        {
+            currentSceneIndex = 0;
+        }
+        SceneManager.LoadScene(currentSceneIndex);
     }
 
     // Update is called once per frame
@@ -119,7 +135,7 @@ public class RocketMover : MonoBehaviour
             RespondToThrustInput();
             RespondToRotateInput();
 
-            CheckReset();
+            CheckDebug();
         } 
     }
 
@@ -169,6 +185,38 @@ public class RocketMover : MonoBehaviour
         }
     }
 
+    private void RotateRight(float thrust)
+    {
+        transform.Rotate(thrust * Vector3.forward);
+        if (rightThrustSystem.isStopped)
+        {
+            rightThrustSystem.Play();
+        }
+    }
+    
+    private void RotateLeft(float thrust)
+    {
+        transform.Rotate(thrust * -Vector3.forward);
+
+        if (leftThrustSystem.isStopped)
+        {
+            leftThrustSystem.Play();
+        }
+    }
+
+    private void StopRotate()
+    {
+        if (rightThrustSystem.isPlaying)
+        {
+            rightThrustSystem.Stop();
+        }
+
+        if (leftThrustSystem.isPlaying)
+        {
+            leftThrustSystem.Stop();
+        }
+    }
+
     void RespondToRotateInput()
     {
         rigidBody.freezeRotation = true;
@@ -176,17 +224,21 @@ public class RocketMover : MonoBehaviour
         var thrust = RCSThrust * Time.deltaTime;
         if (Input.GetKey(KeyCode.A))
         {
-            transform.Rotate(thrust * Vector3.forward);
+            RotateRight(thrust);
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Rotate(thrust * -Vector3.forward);
+            RotateLeft(thrust);
+        }
+        else
+        {
+            StopRotate();
         }
 
         rigidBody.freezeRotation = false;
     }
 
-    private void CheckReset()
+    private void CheckDebug()
     {
         if (Input.GetKey(KeyCode.R))
         {
@@ -195,6 +247,18 @@ public class RocketMover : MonoBehaviour
 
             rigidBody.velocity = Vector3.zero;
             rigidBody.angularVelocity = Vector3.zero;
+        }
+        else if (Input.GetKey(KeyCode.L))
+        {
+            InvokeSuccessSequence();
+        }
+        else if (Input.GetKeyUp(KeyCode.C))
+        {
+            collisionsEnabled = !collisionsEnabled;
+            if (collisionText != null)
+            {
+                collisionText.text = $"Collisions Enabled: {collisionsEnabled}";
+            }
         }
     }
 }

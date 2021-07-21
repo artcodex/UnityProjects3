@@ -27,8 +27,8 @@ public class Oscillator : MonoBehaviour
         }
      
         var cycleOffset = Time.time / TimePeriod;
-        var pi2 = Mathf.PI * 2;
-        float oscillationFactor = Mathf.Sin(cycleOffset * pi2);
+        var tau = Mathf.PI * 2;
+        float oscillationFactor = Mathf.Sin(cycleOffset * tau);
         MovementFactor = oscillationFactor;//(oscillationFactor / 2.0f) + 0.5f;
         var offset = MovementVector * MovementFactor;
 
